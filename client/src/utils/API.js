@@ -3,7 +3,7 @@ import axios from "axios";
 export default {
   // Gets all Saved Articles
   getArticles: function() {
-    return axios.get("/api/articles/saved");
+    return axios.get("/api/articles");
   },
   // Gets the Saved Article with the given id
   getArticle: function(id) {
@@ -15,7 +15,11 @@ export default {
   },
   // Saves a Article to the database
   saveArticle: function(ArticleData) {
-    return axios.post("/api/articles", ArticleData);
+    console.log(ArticleData)
+    return axios.post("/api/articles", ArticleData)
+    .catch(function(err) {
+      console.log(err);
+    });
   },
   searchArticles: function(query) {
     let apiURL = `${query.URL}${query.q}${query.start}${query.end}${query.api}`

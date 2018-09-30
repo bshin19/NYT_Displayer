@@ -1,5 +1,7 @@
-.delete-btn {
-    float: right;
-    color: #e74944;
-  }
-  
+#delete-btn {
+    color: red;
+}
+
+.btn {
+  font-size: .8em;
+}

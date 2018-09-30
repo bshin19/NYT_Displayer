@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import DeleteBtn from "../../components/DeleteBtn";
 import API from "../../utils/API";
 import Nav from "../Nav";
 import Search from "../Search";
@@ -18,11 +17,17 @@ class Home extends Component {
 
     // Upon successful component mounting, calls the loadarticles function
     componentDidMount() {
-        //this.loadArticles();
+        this.loadSaved();
     };
 
     loadSaved = () => {
-        API.getArticles();
+        console.log("loading Saved");
+        API.getArticles()
+            .then(res => {
+                this.setState({ saved: res.data })
+                console.log(res.data);
+            })
+            .catch(err => console.log(err))
     }
 
     // Calls the API route to get articles from NYT.
@@ -61,7 +66,8 @@ class Home extends Component {
     };
 
     // Calls the API route to delete articles from Mongo, then updates the page.
-    deleteArticle = id => {
+    deleteArticle = event => {
+        let { id } = event.target;
         API.deleteArticle(id)
             .then(res => this.loadSaved())
             .catch(err => console.log(err));
@@ -115,10 +121,22 @@ class Home extends Component {
             note: this.state.note
         }
         console.log(data)
-        API.saveArticle(data).then(() => { 
+        API.saveArticle(data).then(() => {
             console.log("data saved");
             this.loadSaved();
         });
+    };
+
+    findAuthor = byline => {
+        if (byline) {
+            if (byline.hasOwnProperty("original")) {
+                return byline.original;
+            } else {
+                return byline;
+            }
+        } else {
+            return null;
+        };
     };
 
     render() {
@@ -146,6 +164,7 @@ class Home extends Component {
                     loadSaved={this.loadSaved}
                     saveArticle={this.saveArticle}
                     title="Top Articles"
+                    findAuthor={this.findAuthor}
                     btnText="Save"
                 />
 
@@ -154,8 +173,9 @@ class Home extends Component {
                     articles={this.state.saved}
                     saveArticle={this.deleteArticle}
                     loadSaved={this.loadSaved}
+                    findAuthor={this.findAuthor}
                     title="Saved Articles"
-                    btnText="Delete"
+                    btnText="X"
                 />
                 <Footer />
             </div>

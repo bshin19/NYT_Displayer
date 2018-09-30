@@ -12,7 +12,4 @@ router.route("/:id")
   .put(articlesController.update)
   .delete(articlesController.remove);
 
-router.route("/saved")
-  .get(articlesController.findAll);
-
 module.exports = router;
