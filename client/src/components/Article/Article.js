@@ -1,32 +1,55 @@
 import React from "react";
+import { FormBtn } from "../Form";
 
 const Article = props => {
-    { console.log(props) }
-    <li className='list-group-item articleHeadline'>
+    return (
+        <li className='list-group-item articleHeadline'>
+            {console.log(props)}
 
-        {/* Article Name Section */}
-        {/* Side Numbers */}
-        <span className='label label-primary'>
-            {/* //     number */}
-        </span>
+            <div className="row">
 
-        {/* Headline Title */}
-        <strong>
-            {props.headline && props.headline.main ? props.headline.main : ""}
-        </strong>
+                {/* Article Name Section */}
+                {/* Side Numbers */}
+                <span className='label label-primary'>
+                    {/* //     number */}
+                </span>
 
-        {/* Byline Section */}
-        {props.byline ? "<h5>" + props.byline.original + "</h5>" : ""}
+                {/* Headline Title */}
+                <h3 className="col-10">
+                    {props.headline && props.headline.main ? props.headline.main : ""}
+                </h3>
 
-        {/* Article Section */}
-        {props.section_name ? "<h5>Section: " + props.section_name + "</h5>" : ""}
+                <FormBtn
+                    id={props.id}
+                    onClick={props.saveArticle}
+                >
+                    {props.btnText}
+                </FormBtn>
 
-        {/* Pubdate Section */}
-        {props.pub_date ? "<h5>" + props.pub_date + "</h5>": ""}
+            </div>
 
-        {/* URL Section */}
-        <a href={props.web_url}>props.web_url</a>
-    </li>
+            <div className="row">
+
+                {/* Byline Section */}
+                <div className="col-4">
+                    {props.byline ? props.byline.original : ""}
+                </div>
+
+                {/* Article Section */}
+                <div className="col-4">
+                    {props.section_name ? "Section: " + props.section_name : ""}
+                </div>
+
+                {/* Pubdate Section */}
+                <div className="col-4">
+                    {props.pub_date ? "published: " + props.pub_date.substring(0, 10) : ""}
+                </div>
+
+            </div>
+
+            {/* URL Section */}
+            <a href={props.web_url}>{props.web_url}</a>
+        </li>);
 };
 
 export default Article;

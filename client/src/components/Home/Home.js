@@ -18,36 +18,36 @@ class Home extends Component {
 
     // Upon successful component mounting, calls the loadarticles function
     componentDidMount() {
-        this.loadArticles();
+        //this.loadArticles();
     };
 
-    // Calls the API route to get articles from Mongo.
+    loadSaved = () => {
+        API.getArticles();
+    }
+
+    // Calls the API route to get articles from NYT.
     loadArticles = () => {
-        API.searchArticles(this.buildQuery(this.state.term))
+        API.searchArticles(this.buildQuery())
             .then(res =>
-                this.setState({
-                    books: res.data,
-                    title: "",
-                    author: "",
-                    synopsis: ""
-                })
-            )
-            .catch(err => console.log(err));
-    };
-
-    // Calls the API route to delete articles from Mongo, then updates the page.
-    deleteArticle = id => {
-        API.deleteArticle(id)
-            .then(res => this.loadArticles())
-            .catch(err => console.log(err));
+                res.data.response.docs ?
+                    this.setState({
+                        articles: res.data.response.docs,
+                        topic: "",
+                        start: "",
+                        end: ""
+                    })
+                    :
+                    (this.setState({ articles: [], message: "No results to display, try another search" })
+                    )
+                        .catch(err => console.log(err)));
     };
 
     // Query NYT API
-    buildQuery = term => {
+    buildQuery = () => {
         let query = {
             "URL": "https://api.nytimes.com/svc/search/v2/articlesearch.json?",
             "api": "&api-key=b9f91d369ff59547cd47b931d8cbc56b:0:74623931",
-            "q": "q =" + term,
+            "q": "q=" + this.state.topic,
             "start": this.testYear("&begin_date=", this.state.start),
             "end": this.testYear("&end_date=", this.state.end)
         };
@@ -60,6 +60,13 @@ class Home extends Component {
         } else { return "" }
     };
 
+    // Calls the API route to delete articles from Mongo, then updates the page.
+    deleteArticle = id => {
+        API.deleteArticle(id)
+            .then(res => this.loadSaved())
+            .catch(err => console.log(err));
+    };
+
     // Generic handler for input updating
     handleInputChange = event => {
         const { name, value } = event.target;
@@ -70,18 +77,48 @@ class Home extends Component {
 
     // Handles the search for NYT Articles
     handleFormSubmit = event => {
+        event.preventDefault();
+        this.loadArticles();
         console.log("handleFormSubmit");
         console.log(this.state)
+        // if (this.state.title && this.state.author) {
+        //     API.saveArticle({
+        //         title: this.state.title,
+        //         author: this.state.author,
+        //         synopsis: this.state.synopsis
+        //     })
+        //         .then(res => this.loadArticles())
+        //         .catch(err => console.log(err));
+        // };
+    };
+
+    saveArticle = event => {
         event.preventDefault();
-        if (this.state.title && this.state.author) {
-            API.saveArticle({
-                title: this.state.title,
-                author: this.state.author,
-                synopsis: this.state.synopsis
-            })
-                .then(res => this.loadArticles())
-                .catch(err => console.log(err));
-        };
+        console.log("Save Article has been clicked");
+        console.log(event.target);
+        let { id } = event.target;
+        let selectedArticle = this.state.articles.filter(article => id === article._id)
+        // Remove the selected Article from the current Articles state (to remove it from the list)
+        for (var i = 0; i < this.state.articles.length - 1; i++) {
+            if (this.state.articles[i]._id === id) {
+                this.state.articles.splice(i, 1);
+            }
+        }
+        const data = {
+            web_url: selectedArticle[0].web_url,
+            id: selectedArticle[0]._id,
+            headline: selectedArticle[0].headline.main,
+            snippet: selectedArticle[0].snippet,
+            section_name: (selectedArticle[0].section_name ? selectedArticle[0].section_name : ""),
+            pub_date: (selectedArticle[0].pub_date ? selectedArticle[0].pub_date.substring(0, 10) : ""),
+            byline: (selectedArticle[0].byline ? selectedArticle[0].byline.original : ""),
+            note: this.state.note
+        }
+        console.log(data)
+        API.saveArticle(data).then(() => { 
+            console.log("data saved");
+            this.loadSaved();
+        });
     };
 
     render() {
@@ -89,11 +126,15 @@ class Home extends Component {
             <div className="container">
 
                 {/* Navbar Component */}
-                <Nav></Nav>
+                <Nav />
 
                 <Search
                     handleInputChange={this.handleInputChange}
                     handleFormSubmit={this.handleFormSubmit}
+                    loadArticles={this.loadArticles}
+                    buildQuery={this.buildQuery}
+                    testYear={this.testYear}
+
                     topic={this.state.topic}
                     start={this.state.start}
                     end={this.state.end}
@@ -102,11 +143,19 @@ class Home extends Component {
                 <Articles
                     header="Search Results"
                     articles={this.state.articles}
+                    loadSaved={this.loadSaved}
+                    saveArticle={this.saveArticle}
+                    title="Top Articles"
+                    btnText="Save"
                 />
 
                 <Articles
                     header="Saved News Stories"
                     articles={this.state.saved}
+                    saveArticle={this.deleteArticle}
+                    loadSaved={this.loadSaved}
+                    title="Saved Articles"
+                    btnText="Delete"
                 />
                 <Footer />
             </div>

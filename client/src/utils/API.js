@@ -1,7 +1,5 @@
 import axios from "axios";
 
-const BASEURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?";
-
 export default {
   // Gets all Saved Articles
   getArticles: function() {
