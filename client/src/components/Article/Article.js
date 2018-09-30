@@ -6,7 +6,6 @@ const Article = props => {
     return (
         <div className='col-lg-4 col-md-6 col-12 my-2'>
             <div className=" pl-2 mx-2 bg-light addRad">
-                {console.log(props)}
 
                 <div className="row">
 

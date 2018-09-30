@@ -21,11 +21,10 @@ class Home extends Component {
     };
 
     loadSaved = () => {
-        console.log("loading Saved");
         API.getArticles()
             .then(res => {
                 this.setState({ saved: res.data })
-                console.log(res.data);
+                //console.log(res.data);
             })
             .catch(err => console.log(err))
     }
@@ -85,23 +84,10 @@ class Home extends Component {
     handleFormSubmit = event => {
         event.preventDefault();
         this.loadArticles();
-        console.log("handleFormSubmit");
-        console.log(this.state)
-        // if (this.state.title && this.state.author) {
-        //     API.saveArticle({
-        //         title: this.state.title,
-        //         author: this.state.author,
-        //         synopsis: this.state.synopsis
-        //     })
-        //         .then(res => this.loadArticles())
-        //         .catch(err => console.log(err));
-        // };
     };
 
     saveArticle = event => {
         event.preventDefault();
-        console.log("Save Article has been clicked");
-        console.log(event.target);
         let { id } = event.target;
         let selectedArticle = this.state.articles.filter(article => id === article._id)
         // Remove the selected Article from the current Articles state (to remove it from the list)
@@ -120,9 +106,8 @@ class Home extends Component {
             byline: (selectedArticle[0].byline ? selectedArticle[0].byline.original : ""),
             note: this.state.note
         }
-        console.log(data)
+        // console.log(data)
         API.saveArticle(data).then(() => {
-            console.log("data saved");
             this.loadSaved();
         });
     };

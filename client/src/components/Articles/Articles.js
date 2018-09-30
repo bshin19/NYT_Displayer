@@ -17,8 +17,7 @@ const Articles = props => (
 
             </div>
             <div className="row bg-dark py-2 botRad">
-                    {console.log(props)}
-                    {props.articles.length > 1 ?
+                    {props.articles.length >= 1 ?
                         props.articles.map(article => (
                             <Article
                                 headline={article.headline.main ? article.headline.main : article.headline}
