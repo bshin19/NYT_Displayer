@@ -19,13 +19,13 @@ const Search = props => (
             value={props.start}
             onChange={props.handleInputChange}
             name="start"
-            placeholder="Start Date (optional)"
+            placeholder="Start Year (optional)"
         />
         <Input
             value={props.end}
             onChange={props.handleInputChange}
             name="end"
-            placeholder="End Date (optional)"
+            placeholder="End Year (optional)"
         />
         <FormBtn
             disabled={!(props.topic)}
